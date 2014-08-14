@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.tianci.pppoe"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="19" />
+
+    <application
+        android:name="com.tianci.pppoe.PPPoEApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        <activity
+            android:name="com.tianci.pppoe.activity.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.tianci.pppoe.activity.LoginActivity" >
+        </activity>
+        <activity android:name="com.tianci.pppoe.activity.ConnectingActivity" >
+        </activity>
+        <activity android:name="com.tianci.pppoe.activity.ConnectionInfoActivity" >
+        </activity>
+
+        <service android:name="com.tianci.pppoe.service.PPPoEService" >
+        </service>
+
+        <receiver android:name="com.tianci.pppoe.Receiver.BootBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+</manifest>
