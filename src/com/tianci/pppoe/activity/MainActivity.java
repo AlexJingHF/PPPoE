@@ -17,6 +17,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.skyworth.framework.skysdk.ipc.SkyApplication;
 import com.tianci.pppoe.R;
 import com.tianci.pppoe.layout.CLoading;
 import com.tianci.pppoe.layout.LoginView;
@@ -25,12 +26,13 @@ import com.tianci.pppoe.service.PPPoEService;
 import com.tianci.pppoe.utils.Config;
 import com.tianci.pppoe.utils.LogUtil;
 import com.tianci.pppoe.view.BgScrollView;
+import com.tianci.system.api.TCSystemService;
 
-public class MainActivity extends BaseActivity implements BgScrollView.ScrollStatusListener ,CLoading.CLoadingListener
+public class MainActivity extends BaseActivity implements BgScrollView.ScrollStatusListener,CLoading.CLoadingListener
 {
 	private static final String TAG = MainActivity.class.getSimpleName();
 	private PPPoEService.PPPoEBinder mBinder = null;
-
+    private TCSystemService systemApi = null;
 	private RelativeLayout mMainLayout = null;
 	private LinearLayout mLinearLayout = null;
 	private CLoading mLoading = null;
@@ -68,8 +70,13 @@ public class MainActivity extends BaseActivity implements BgScrollView.ScrollSta
 		}
 	};
 
+    @Override
+    public void onCmdConnectorInit() {
+        super.onCmdConnectorInit();
+        systemApi = new TCSystemService(this);
+    }
 
-	private enum INITTYPE
+    private enum INITTYPE
 	{
 		COM_INIT, UI_INIT
 	}
@@ -248,8 +255,8 @@ public class MainActivity extends BaseActivity implements BgScrollView.ScrollSta
 			case 3:
 			{
 				mScrollView.getScroller().startScroll(0, (int) (796 / div),
-				0,
-				(int) (1042 / div), 2000);
+                        0,
+                        (int) (1042 / div), 2000);
 				mScrollView.computeScroll();
 				mStep = 3;
 				mLinearLayout.removeAllViews();

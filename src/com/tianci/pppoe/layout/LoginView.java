@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.tianci.pppoe.R;
 import com.tianci.pppoe.activity.MainActivity;
 import com.tianci.pppoe.utils.Config;
+import com.tianci.pppoe.utils.LogUtil;
 import com.tianci.pppoe.utils.SharedUtil;
 import com.tianci.pppoe.view.EditTextWithImg;
 import com.tianci.pppoe.view.SwicthTextView;
@@ -62,6 +63,7 @@ public class LoginView extends LinearLayout implements OnClickListener
 		String name = getResources().getString(R.string.pppoe_shared_preferences);
 		SharedPreferences sharedPreferences = getContext().getSharedPreferences(name, Context.MODE_PRIVATE);
 		String account = sharedPreferences.getString(getResources().getString(R.string.pppoe_shared_preferences_account), "");
+        mAccuntEdit.setText(account);
 		if (!account.equals(""));
 		{
 			String psw = sharedPreferences.getString(getResources().getString(R.string.pppoe_shared_preferences_pwd), "");
@@ -249,10 +251,17 @@ public class LoginView extends LinearLayout implements OnClickListener
 	
 	private void saveData()
 	{
-		SharedUtil.setUserAccount(mAccuntEdit.getText().toString(), getContext());
-		SharedUtil.setUserPsw(mPswEdit.getText().toString(), getContext());
-		SharedUtil.setUserInterface(mSwicthTextView.getCurrentString(), getContext());
-		SharedUtil.setUserAutoConnect(mAutoConnect.isChecked(), getContext());
+        SharedPreferences.Editor editor = getContext().getSharedPreferences("pppoe_data",Context.MODE_PRIVATE).edit();
+        editor.putString("account",mAccuntEdit.getText().toString());
+        editor.putString("password",mPswEdit.getText().toString());
+        editor.putString("interface",mSwicthTextView.getCurrentString());
+		editor.putBoolean("auto_connect",mAutoConnect.isChecked());
+        editor.commit();
+
+//        SharedUtil.setUserAccount(mAccuntEdit.getText().toString(), getContext());
+//        SharedUtil.setUserPsw(mPswEdit.getText().toString(), getContext());
+//        SharedUtil.setUserInterface(mSwicthTextView.getCurrentString(), getContext());
+//        SharedUtil.setUserAutoConnect(mAutoConnect.isChecked(), getContext());
 	}
 	
 	public boolean check()
