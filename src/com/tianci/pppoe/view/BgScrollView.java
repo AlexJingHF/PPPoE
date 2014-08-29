@@ -38,11 +38,8 @@ public class BgScrollView extends ScrollView
 		setVerticalScrollBarEnabled(false);
 		
 		image = new ImageView(context);
-//		image.setImageResource(R.drawable.bg);
-		
-		Bitmap bm = Bitmap.createBitmap((int)(1920/div), (int)(2920/div), Config.ARGB_8888);
+		image.setImageResource(R.drawable.bg);
 		image.setScaleType(ScaleType.FIT_CENTER);
-		image.setImageBitmap(bm);
 		mScroller = new Scroller(getContext(),new AccelerateInterpolator());
 		addView(image,new LayoutParams(-1, -1));
 	}

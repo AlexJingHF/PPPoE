@@ -34,7 +34,7 @@ public class SwicthTextView extends RelativeLayout implements OnClickListener,
 	private int mSwitchWidth = 252;
 	private int mIndex = 0;
 	private String[] strings = null;
-	private static final float TEXT_SIZE = 50;
+	private static final float TEXT_SIZE = 35;
 
 	public SwicthTextView(Context context, float div)
 	{
@@ -127,7 +127,7 @@ public class SwicthTextView extends RelativeLayout implements OnClickListener,
 	{
 		TextView tv = new TextView(getContext());
 		tv.setTextColor(Color.WHITE);
-		tv.setTextSize(TEXT_SIZE / div);
+		tv.setTextSize(TEXT_SIZE);
 		tv.setGravity(Gravity.CENTER);
 		return tv;
 	}

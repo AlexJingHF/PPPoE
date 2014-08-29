@@ -18,26 +18,22 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.tianci.pppoe.R;
-import com.tianci.pppoe.layout.CircleLoading;
-import com.tianci.pppoe.layout.CircleLoading.CircleLoadingListener;
+import com.tianci.pppoe.layout.CLoading;
 import com.tianci.pppoe.layout.LoginView;
 import com.tianci.pppoe.layout.StatusView;
 import com.tianci.pppoe.service.PPPoEService;
-import com.tianci.pppoe.service.PPPoEService.PPPoEBinder;
 import com.tianci.pppoe.utils.Config;
 import com.tianci.pppoe.utils.LogUtil;
 import com.tianci.pppoe.view.BgScrollView;
-import com.tianci.pppoe.view.BgScrollView.ScrollStatusListener;
 
-public class MainActivity extends BaseActivity implements
-		CircleLoadingListener, ScrollStatusListener
+public class MainActivity extends BaseActivity implements BgScrollView.ScrollStatusListener ,CLoading.CLoadingListener
 {
 	private static final String TAG = MainActivity.class.getSimpleName();
 	private PPPoEService.PPPoEBinder mBinder = null;
 
 	private RelativeLayout mMainLayout = null;
 	private LinearLayout mLinearLayout = null;
-	private CircleLoading mLoading = null;
+	private CLoading mLoading = null;
 	private BgScrollView mScrollView = null;
 	private LoginView mLoginView = null;
 	private StatusView mStatusView = null;
@@ -48,10 +44,10 @@ public class MainActivity extends BaseActivity implements
 	private float mScreenHeight = 1080f;
 
 	private int mLoginPaddingTop = 99;
-	private int mStatusPaddingTop = 510;
-	private float div = 1.5f;
+	private int mStatusPaddingTop = 200;
+	private float div = Config.getDiv();
 	private static MainActivity INSTANCE = null;
-	private int mStep = 1;
+	private int mStep = 0;
 
 	private LayoutAnimationController lac = null;
 	private ServiceConnection mServiceConnection = new ServiceConnection()
@@ -67,7 +63,8 @@ public class MainActivity extends BaseActivity implements
 		public void onServiceConnected(ComponentName name, IBinder service)
 		{
 			Log.d(TAG, TAG + "->onServiceConnected");
-			mBinder = (PPPoEBinder) service;
+			mBinder = (PPPoEService.PPPoEBinder) service;
+            mInitInTurns.notifyInit(INITTYPE.COM_INIT);
 		}
 	};
 
@@ -87,9 +84,11 @@ public class MainActivity extends BaseActivity implements
 			{
 			case COM_INIT:
 				turns[0] = 1;
+                LogUtil.d(TAG,"COM_INIT -> OK");
 				break;
 			case UI_INIT:
 				turns[1] = 1;
+                LogUtil.d(TAG,"UI_INIT -> OK");
 				break;
 			default:
 				break;
@@ -109,7 +108,6 @@ public class MainActivity extends BaseActivity implements
 	{
 		super.onCreate(savedInstanceState);
 		INSTANCE = this;
-		div = Config.getInstance(this).div;
 		Intent service = new Intent(this, PPPoEService.class);
 		bindService(service, mServiceConnection, BIND_AUTO_CREATE);
 		mMainLayout = new RelativeLayout(this);
@@ -123,8 +121,9 @@ public class MainActivity extends BaseActivity implements
 		mMainLayout.addView(mLinearLayout);
 
 		setContentView(mMainLayout);
-		mLoading = new CircleLoading(this, div);
+		mLoading = new CLoading(this);
 		mLinearLayout.addView(mLoading);
+        mLoading.setListener(this);
 		new UIBuildThread().execute();
 	}
 	
@@ -133,9 +132,6 @@ public class MainActivity extends BaseActivity implements
 	protected void onStart()
 	{
 		super.onStart();
-		mLoading.setCircleLoadingListener(this);
-		mLoading.setTip("程序初始化中...");
-		mLoading.start(2000);
 	}
 
 	private final class UIBuildThread extends AsyncTask<Void, Integer, Boolean>
@@ -144,41 +140,49 @@ public class MainActivity extends BaseActivity implements
 		@Override
 		protected void onPreExecute()
 		{
-			mLoginView = new LoginView(MainActivity.this, div);
 			super.onPreExecute();
+            mLoginView = new LoginView(MainActivity.this, div);
+            publishProgress(30);
 		}
 		@Override
 		protected Boolean doInBackground(Void... params)
 		{
 			mScrollView = new BgScrollView(MainActivity.this, div);
+            publishProgress(60);
 			mScrollView.setScrollStatusListener(MainActivity.this);
-//			isInit = true;
 			mInitInTurns.notifyInit(INITTYPE.UI_INIT);
-			if (mInitInTurns.isTurn())
-			{
-				toLoginView();
-			}
 			mStatusView = new StatusView(MainActivity.this, div);
+            publishProgress(100);
 			return true;
 		}
-	}
 
-//	private boolean isInit = false;
-//	private boolean isProgressed = false;
+        /**
+         * Runs on the UI thread after {@link #publishProgress} is invoked.
+         * The specified values are the values passed to {@link #publishProgress}.
+         *
+         * @param values The values indicating progress.
+         * @see #publishProgress
+         * @see #doInBackground
+         */
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            mLoading.setProgress(values[0]);
+
+        }
+    }
 
 	private void toLoginView()
 	{
-			mHandler.sendEmptyMessage(1);
+	    mHandler.sendEmptyMessage(1);
 	}
 
 	public void retoLoginView()
 	{
 		mScrollView.getScroller().startScroll(0, (int) (1840 / div), 0,
 				(int) (-2000 / div), 2000);
-//		(int) (-1840 / div), 2000);
 		mScrollView.computeScroll();
 		mHandler.sendEmptyMessage(6);
-		// mHandler.sendEmptyMessage(4);
 		new Thread()
 		{
 			public void run()
@@ -222,21 +226,33 @@ public class MainActivity extends BaseActivity implements
 				mLinearLayout.removeAllViews();
 				mLinearLayout.setGravity(Gravity.CENTER);
 				mLinearLayout.setLayoutAnimation(getLacScaleIn());
-				mLoading.stop();
-				mLoading.setTip("下班了 吃饭了 ...");
 				mLinearLayout.addView(mLoading);
-				mLoading.start(5000);
+                mLoading.start();
+                new Thread(new Runnable() {
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        while (count<=100){
+                            mLoading.setProgress(count);
+                            count +=20;
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
 			}
 				break;
 			case 3:
 			{
-				// mScrollView.getScroller().startScroll(0, (int) (796 / div),
-				// 0,
-				// (int) (1042 / div), 2000);
-				// mScrollView.computeScroll();
+				mScrollView.getScroller().startScroll(0, (int) (796 / div),
+				0,
+				(int) (1042 / div), 2000);
+				mScrollView.computeScroll();
 				mStep = 3;
 				mLinearLayout.removeAllViews();
-				mLoading.stop();
 				mLinearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
 				mLinearLayout.setLayoutAnimation(getLacFadeIn());
 				mStatusView.setY(mStatusPaddingTop / div);
@@ -331,57 +347,11 @@ public class MainActivity extends BaseActivity implements
 		unbindService(mServiceConnection);
 	}
 
-	@Override
-	public void onFinished(boolean isFinish)
-	{
-		switch (mStep)
-		{
-		case 1:
-			mInitInTurns.notifyInit(INITTYPE.COM_INIT);
-			if (mInitInTurns.isTurn())
-			{
-				toLoginView();
-			}
-			break;
-		case 2:
-			mScrollView.getScroller().startScroll(0, (int) (796 / div), 0,
-					(int) (1044 / div), 2000);
-			mScrollView.computeScroll();
-			// toStatusView();
-			mHandler.sendEmptyMessage(5);
-			new Thread()
-			{
-				public void run()
-				{
-					while (mScrollView.getScroller().computeScrollOffset())
-					{
-
-					}
-					toStatusView();
-				};
-			}.start();
-			break;
-		case 3:
-		{
-			mHandler.sendEmptyMessage(6);
-		}
-			break;
-		default:
-			break;
-		}
-
-	}
-
 	private void toStatusView()
 	{
 		mHandler.sendEmptyMessage(3);
 	}
 
-	@Override
-	public void onCurrentProgress(int progress)
-	{
-
-	}
 
 	public void toConnectingLoading()
 	{
@@ -432,4 +402,19 @@ public class MainActivity extends BaseActivity implements
 		}
 	}
 
+    @Override
+    public void onFinished() {
+        mLoading.stop();
+        switch (mStep){
+            case 0:{
+                toLoginView();
+            }
+            break;
+            case 2:{
+                toStatusView();
+            }
+            break;
+        }
+        LogUtil.d(TAG,"onFinished");
+    }
 }

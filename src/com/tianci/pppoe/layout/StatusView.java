@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.tianci.pppoe.R;
 import com.tianci.pppoe.activity.MainActivity;
+import com.tianci.pppoe.utils.Config;
 import com.tianci.pppoe.utils.LogUtil;
 
 public class StatusView extends LinearLayout implements OnClickListener
@@ -22,9 +23,9 @@ public class StatusView extends LinearLayout implements OnClickListener
 	private static final String TAG = StatusView.class.getSimpleName();
 
 	private int mWidth = 981;
-	private float div = 1;
+	private float div = Config.getDiv();
 	
-	private float mTextSize = 60;
+	private float mTextSize = 35;
 	private int mPaddingTop = 40;
 	private String[] strings = null;
 	private String[] statusStrings = null;
@@ -88,7 +89,7 @@ public class StatusView extends LinearLayout implements OnClickListener
 	private Button getButton()
 	{
 		Button button = new Button(getContext());
-		button.setTextSize(mTextSize / div);
+		button.setTextSize(mTextSize);
 		button.setTextColor(Color.WHITE);
 		button.setGravity(Gravity.CENTER);
 		button.setFocusable(true);
@@ -99,7 +100,7 @@ public class StatusView extends LinearLayout implements OnClickListener
 	private TextView getTextView()
 	{
 		TextView tv = new TextView(getContext());
-		tv.setTextSize(mTextSize / div);
+		tv.setTextSize(mTextSize);
 		tv.setTextColor(Color.WHITE);
 		tv.setGravity(Gravity.CENTER_VERTICAL);
 		return tv;

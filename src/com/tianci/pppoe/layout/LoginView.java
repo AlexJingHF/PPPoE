@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.tianci.pppoe.R;
 import com.tianci.pppoe.activity.MainActivity;
+import com.tianci.pppoe.utils.Config;
 import com.tianci.pppoe.utils.SharedUtil;
 import com.tianci.pppoe.view.EditTextWithImg;
 import com.tianci.pppoe.view.SwicthTextView;
@@ -30,7 +31,7 @@ public class LoginView extends LinearLayout implements OnClickListener
 
 	public static int mWidth = 625;
 	private int mHeight = -2;
-	private float div = 1;
+	private float div = Config.div;
 	private EditTextWithImg mAccuntEdit = null;
 	private EditTextWithImg mPswEdit = null;
 
@@ -40,9 +41,9 @@ public class LoginView extends LinearLayout implements OnClickListener
 	private Button mButtonConnect = null;
 	
 	private TextView mTitle = null;
-	private float mTitleSize = 70;
-	private float mSmallTitle = 50;
-	private float mTextSize = 40;
+	private float mTitleSize = 60;
+	private float mSmallTitle = 35;
+	private float mTextSize = 28;
 	
 	public LoginView(Context context, float div)
 	{
@@ -130,7 +131,7 @@ public class LoginView extends LinearLayout implements OnClickListener
 		ll.setPadding(0, (int) (24/div), 0, 0);
 		TextView tv = new TextView(getContext());
 		tv.setTextColor(Color.WHITE);
-		tv.setTextSize(mSmallTitle / div);
+		tv.setTextSize(mSmallTitle);
 		tv.setGravity(Gravity.CENTER_VERTICAL);
 		tv.setText(R.string.network_interface_title);
 		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
@@ -155,7 +156,7 @@ public class LoginView extends LinearLayout implements OnClickListener
 				RelativeLayout.TRUE);
 		mShowPsw = new CheckBox(getContext());
 		mShowPsw.setText(R.string.show_psw);
-		mShowPsw.setTextSize(mTextSize / div);
+		mShowPsw.setTextSize(mTextSize );
 		mShowPsw.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
 		mShowPsw.setId(0x000001);
 		mShowPsw.setButtonDrawable(R.drawable.check_box_selector);
@@ -204,14 +205,14 @@ public class LoginView extends LinearLayout implements OnClickListener
 		mTitle.setGravity(Gravity.CENTER);
 		mTitle.setText(R.string.pppoe_title);
 
-		mAccuntEdit = new EditTextWithImg(getContext(), div);
+		mAccuntEdit = new EditTextWithImg(getContext());
 		mAccuntEdit.setTextColor(Color.WHITE);
 		mAccuntEdit.setTextSize(mTextSize / div);
 		mAccuntEdit.setIcon(R.drawable.user_icon);
 		mAccuntEdit.setFilters(new InputFilter[] {new InputFilter.LengthFilter(23)});
 		mAccuntEdit.setSingleLine();
 
-		mPswEdit = new EditTextWithImg(getContext(), div);
+		mPswEdit = new EditTextWithImg(getContext());
 		mPswEdit.setIcon(R.drawable.psw_icon);
 		mPswEdit.setTextColor(Color.WHITE);
 		mPswEdit.setTextSize(mTextSize / div);
