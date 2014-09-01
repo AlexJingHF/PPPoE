@@ -24,12 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.tianci.pppoe.activity.LoginActivity" >
-        </activity>
-        <activity android:name="com.tianci.pppoe.activity.ConnectingActivity" >
-        </activity>
-        <activity android:name="com.tianci.pppoe.activity.ConnectionInfoActivity" >
-        </activity>
 
         <service android:name="com.tianci.pppoe.service.PPPoEService" >
         </service>

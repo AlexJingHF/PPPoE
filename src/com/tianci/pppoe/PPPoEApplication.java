@@ -15,7 +15,6 @@ public class PPPoEApplication extends Application {
     public void onCreate() {
         super.onCreate();
         LogUtil.d(TAG, TAG + "->onCreate");
-        startService(new Intent(this, PPPoEService.class));
         mContext = this;
     }
 

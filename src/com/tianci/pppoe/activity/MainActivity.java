@@ -66,7 +66,6 @@ public class MainActivity extends BaseActivity implements BgScrollView.ScrollSta
 		{
 			Log.d(TAG, TAG + "->onServiceConnected");
 			mBinder = (PPPoEService.PPPoEBinder) service;
-            mInitInTurns.notifyInit(INITTYPE.COM_INIT);
 		}
 	};
 
@@ -74,6 +73,7 @@ public class MainActivity extends BaseActivity implements BgScrollView.ScrollSta
     public void onCmdConnectorInit() {
         super.onCmdConnectorInit();
         systemApi = new TCSystemService(this);
+        mInitInTurns.notifyInit(INITTYPE.COM_INIT);
     }
 
     private enum INITTYPE
@@ -115,8 +115,8 @@ public class MainActivity extends BaseActivity implements BgScrollView.ScrollSta
 	{
 		super.onCreate(savedInstanceState);
 		INSTANCE = this;
-		Intent service = new Intent(this, PPPoEService.class);
-		bindService(service, mServiceConnection, BIND_AUTO_CREATE);
+//		Intent service = new Intent(this, PPPoEService.class);
+//		bindService(service, mServiceConnection, BIND_AUTO_CREATE);
 		mMainLayout = new RelativeLayout(this);
 		mMainLayout.setLayoutParams(new ViewGroup.LayoutParams(
 				(int) (mScreenWidth / div), (int) (mScreenHeight / div)));
@@ -235,21 +235,21 @@ public class MainActivity extends BaseActivity implements BgScrollView.ScrollSta
 				mLinearLayout.setLayoutAnimation(getLacScaleIn());
 				mLinearLayout.addView(mLoading);
                 mLoading.start();
-                new Thread(new Runnable() {
-                    int count = 0;
-                    @Override
-                    public void run() {
-                        while (count<=100){
-                            mLoading.setProgress(count);
-                            count +=20;
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).start();
+//                new Thread(new Runnable() {
+//                    int count = 0;
+//                    @Override
+//                    public void run() {
+//                        while (count<=100){
+//                            mLoading.setProgress(count);
+//                            count +=20;
+//                            try {
+//                                Thread.sleep(1000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                }).start();
 			}
 				break;
 			case 3:
@@ -362,8 +362,14 @@ public class MainActivity extends BaseActivity implements BgScrollView.ScrollSta
 
 	public void toConnectingLoading()
 	{
+        startPPPoEService();
 		mHandler.sendEmptyMessage(2);
 	}
+
+    private void startPPPoEService(){
+        Intent intent = new Intent(this,PPPoEService.class);
+        startService(intent);
+    }
 
 	public static MainActivity getInstance()
 	{
